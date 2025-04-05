@@ -1,3 +1,5 @@
+import 'package:asteroids_game/presentation/game_screen.dart';
+import 'package:asteroids_game/presentation/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,19 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: HomeApp(),
+      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class HomeApp extends StatelessWidget {
-  const HomeApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Initial Commit"),
     );
   }
 }
