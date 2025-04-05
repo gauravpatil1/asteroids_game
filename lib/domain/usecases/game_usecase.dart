@@ -29,7 +29,7 @@ class GameUsecase {
             speedX: _random.nextDouble() * 2 - 1,
             speedY: _random.nextDouble() * 2 - 1,
             size: asteroidRadius,
-            shape: createCirclePath(asteroidRadius));
+            shape: _generateRandomAsteroidShape(asteroidRadius));
       });
     }
     return [];
@@ -135,6 +135,26 @@ class GameUsecase {
     final circleBounds =
         Rect.fromCircle(center: circleCenter, radius: circleRadius);
     return bounds.overlaps(circleBounds);
+  }
+
+  Path _generateRandomAsteroidShape(double size) {
+    final path = Path();
+    final numPoints = _random.nextInt(8) + 5;
+    for (int i = 0; i < numPoints; i++) {
+      final angle = 2 * pi * i / numPoints;
+      final radiusVariation = _random.nextDouble() * size * 0.8;
+      final radius = size + radiusVariation * (_random.nextDouble() * 2 - 1);
+      final x = radius * cos(angle);
+      final y = radius * sin(angle);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    return path;
   }
 }
 
