@@ -6,6 +6,7 @@ import 'package:asteroids_game/domain/entities/player.dart';
 import 'package:asteroids_game/domain/usecases/game_usecase.dart';
 import 'package:asteroids_game/presentation/game_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -14,36 +15,52 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
-  final Player _player = Player(offset: Offset(100, 100));
+class _GameScreenState extends State<GameScreen>
+    with SingleTickerProviderStateMixin {
+  final Player _player = Player(offset: Offset(0, 0));
   final List<Asteroid> _asteroids = [];
   final List<Bullet> _bullets = [];
 
-  Timer? _timer;
-  int _elapsedSecondsInGame = 0;
-
-  final GameUsecase _gameUsecase = GameUsecase();
+  final GameUsecase _gameUseCase = GameUsecase();
+  late Ticker _ticker;
 
   @override
   void initState() {
     super.initState();
-    _startGame();
-  }
-
-  _startGame() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _elapsedSecondsInGame++;
-      });
+    _ticker = createTicker(_tick);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _player.offset = Offset(MediaQuery.of(context).size.width / 2,
+          MediaQuery.of(context).size.height / 2);
+      _gameUseCase.gameStartTime = DateTime.now();
+      _gameUseCase.gameCurrentTime = DateTime.now();
+      _gameUseCase.minAsteroidSize = 5.0;
+      _gameUseCase.maxAsteroidSize = 50.0;
+      _gameUseCase.setScreenSize(MediaQuery.of(context).size);
+      _asteroids
+          .addAll(_gameUseCase.generateAsteroids(_asteroids.length) ?? []);
+      _ticker.start();
     });
   }
 
-  _endGame() {}
+  String gameTimer = "0:0";
+  int gameTimerInSeconds = 0;
+  _setCurrentGameTime() {
+    final difference =
+        _gameUseCase.gameCurrentTime.difference(_gameUseCase.gameStartTime);
+    final minutes =
+        difference.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds =
+        difference.inSeconds.remainder(60).toString().padLeft(2, '0');
+    gameTimer = '$minutes:$seconds';
+    gameTimerInSeconds = difference.inSeconds;
+  }
 
-  String _formattedTime() {
-    final minutes = (_elapsedSecondsInGame ~/ 60).toString().padLeft(2, '0');
-    final seconds = (_elapsedSecondsInGame % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
+  void _tick(Duration duration) {
+    setState(() {
+      _gameUseCase.gameCurrentTime = DateTime.now();
+      _setCurrentGameTime();
+      _gameUseCase.updateAsteroids(_asteroids);
+    });
   }
 
   void _updatePosition(PointerEvent details) {
@@ -73,7 +90,7 @@ class _GameScreenState extends State<GameScreen> {
             child: Container(
               alignment: Alignment.topRight,
               padding: const EdgeInsets.all(20),
-              child: Text('Timer: ${_formattedTime()}',
+              child: Text('Timer: $gameTimer',
                   style: const TextStyle(color: Colors.white)),
             ),
           ),

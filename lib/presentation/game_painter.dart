@@ -19,8 +19,14 @@ class GamePainter extends CustomPainter {
     final playerPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
+    final asteroidPaint = Paint()..color = Colors.red;
 
     canvas.drawCircle(player.offset, 20, playerPaint);
+
+    for (final asteroid in asteroids) {
+      canvas.drawCircle(
+          Offset(asteroid.x, asteroid.y), asteroid.size, asteroidPaint);
+    }
   }
 
   @override
