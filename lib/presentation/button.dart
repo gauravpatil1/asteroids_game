@@ -19,7 +19,7 @@ class ActionButton extends StatelessWidget {
         ),
       ),
       child: Text(
-        'Start Game',
+        label,
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,

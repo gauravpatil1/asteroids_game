@@ -2,6 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:asteroids_game/domain/entities/asteroid.dart';
+import 'package:asteroids_game/domain/entities/player.dart';
+import 'package:asteroids_game/utils.dart';
 
 class GameUsecase {
   final Random _random = Random();
@@ -18,15 +20,16 @@ class GameUsecase {
   List<Asteroid>? generateAsteroids(int currentAsteroid) {
     if (currentAsteroid == 0) {
       //generate asteroids initially
-      return List.generate(
-          10,
-          (_) => Asteroid(
-                x: _random.nextDouble() * _screenSize.width,
-                y: _random.nextDouble() * _screenSize.height,
-                speedX: _random.nextDouble() * 2 - 1,
-                speedY: _random.nextDouble() * 2 - 1,
-                size: randomDouble(minAsteroidSize, maxAsteroidSize),
-              ));
+      return List.generate(10, (_) {
+        double asteroidRadius = randomDouble(minAsteroidSize, maxAsteroidSize);
+        return Asteroid(
+            x: _random.nextDouble() * _screenSize.width,
+            y: _random.nextDouble() * _screenSize.height,
+            speedX: _random.nextDouble() * 2 - 1,
+            speedY: _random.nextDouble() * 2 - 1,
+            size: asteroidRadius,
+            shape: createCirclePath(asteroidRadius));
+      });
     }
     return [];
   }
@@ -41,6 +44,23 @@ class GameUsecase {
       if (asteroid.y < 0) asteroid.y = _screenSize.height;
       if (asteroid.y > _screenSize.height) asteroid.y = 0;
     }
+  }
+
+  bool detectPlayerAsteroidCollision(Player player, List<Asteroid> asteroids) {
+    for (var asteroid in asteroids) {
+      if (_checkPathCollision(player.shape, player.offset, asteroid.shape,
+          Offset(asteroid.x, asteroid.y))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _checkPathCollision(
+      Path path1, Offset offset1, Path path2, Offset offset2) {
+    final bounds1 = path1.getBounds().shift(offset1);
+    final bounds2 = path2.getBounds().shift(offset2);
+    return bounds1.overlaps(bounds2);
   }
 }
 

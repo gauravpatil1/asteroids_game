@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
         child: ActionButton(
             label: "Start Game",
             onTap: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => GameScreen()),
               );

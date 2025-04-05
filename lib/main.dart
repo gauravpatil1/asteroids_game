@@ -1,3 +1,4 @@
+import 'package:asteroids_game/presentation/game_over_screen.dart';
 import 'package:asteroids_game/presentation/game_screen.dart';
 import 'package:asteroids_game/presentation/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      // home: GameOverScreen(
+      //   timer: "00:22",
+      // ),
+      // home: HomeScreen(),
       home: GameScreen(),
       debugShowCheckedModeBanner: false,
     );

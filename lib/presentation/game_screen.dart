@@ -4,7 +4,9 @@ import 'package:asteroids_game/domain/entities/asteroid.dart';
 import 'package:asteroids_game/domain/entities/bullet.dart';
 import 'package:asteroids_game/domain/entities/player.dart';
 import 'package:asteroids_game/domain/usecases/game_usecase.dart';
+import 'package:asteroids_game/presentation/game_over_screen.dart';
 import 'package:asteroids_game/presentation/game_painter.dart';
+import 'package:asteroids_game/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -17,12 +19,22 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen>
     with SingleTickerProviderStateMixin {
-  final Player _player = Player(offset: Offset(0, 0));
+  final Player _player = Player(
+    offset: Offset(0, 0),
+    radius: 20,
+    shape: createCirclePath(20),
+  );
   final List<Asteroid> _asteroids = [];
   final List<Bullet> _bullets = [];
 
   final GameUsecase _gameUseCase = GameUsecase();
   late Ticker _ticker;
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -60,6 +72,16 @@ class _GameScreenState extends State<GameScreen>
       _gameUseCase.gameCurrentTime = DateTime.now();
       _setCurrentGameTime();
       _gameUseCase.updateAsteroids(_asteroids);
+      bool isGameOver =
+          _gameUseCase.detectPlayerAsteroidCollision(_player, _asteroids);
+      if (isGameOver) {
+        _ticker.stop();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => GameOverScreen(timer: gameTimer)),
+        );
+      }
     });
   }
 
