@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:asteroids_game/domain/entities/asteroid.dart';
 import 'package:asteroids_game/domain/entities/bullet.dart';
 import 'package:asteroids_game/domain/entities/player.dart';
@@ -19,16 +17,22 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen>
     with SingleTickerProviderStateMixin {
-  final Player _player = Player(
+  Player _player = Player(
     offset: Offset(0, 0),
     radius: 20,
-    shape: createCirclePath(20),
+    shape: createPlayerShape(0),
+    angle: 0,
+    speed: 0,
   );
   final List<Asteroid> _asteroids = [];
   final List<Bullet> _bullets = [];
 
   final GameUsecase _gameUseCase = GameUsecase();
   late Ticker _ticker;
+
+  final double _playerRotationSpeed = 0.1;
+  final double _acceleration = 0.2;
+  final double _friction = 0.99;
 
   @override
   void dispose() {
@@ -40,9 +44,16 @@ class _GameScreenState extends State<GameScreen>
   void initState() {
     super.initState();
     _ticker = createTicker(_tick);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _player.offset = Offset(MediaQuery.of(context).size.width / 2,
-          MediaQuery.of(context).size.height / 2);
+      _player = Player(
+        offset: Offset(MediaQuery.of(context).size.width / 2,
+            MediaQuery.of(context).size.height / 2),
+        radius: 20,
+        shape: createPlayerShape(0),
+        angle: 0,
+        speed: 0,
+      );
       _gameUseCase.gameStartTime = DateTime.now();
       _gameUseCase.gameCurrentTime = DateTime.now();
       _gameUseCase.minAsteroidSize = 5.0;
@@ -71,6 +82,8 @@ class _GameScreenState extends State<GameScreen>
     setState(() {
       _gameUseCase.gameCurrentTime = DateTime.now();
       _setCurrentGameTime();
+      _gameUseCase.updatePlayer(
+          _player, _playerRotationSpeed, _acceleration, _friction);
       _gameUseCase.updateAsteroids(_asteroids);
       bool isGameOver =
           _gameUseCase.detectPlayerAsteroidCollision(_player, _asteroids);
@@ -97,7 +110,18 @@ class _GameScreenState extends State<GameScreen>
         child: Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
+        onPanUpdate: (details) {
+          setState(() {
+            _player.angle += details.delta.dx * _playerRotationSpeed;
+            _player.shape = createPlayerShape(_player.angle);
+          });
+        },
         onDoubleTap: () {
+          setState(() {
+            _player.speed += _acceleration;
+          });
+        },
+        onTap: () {
           //fire the bullet
         },
         child: Listener(

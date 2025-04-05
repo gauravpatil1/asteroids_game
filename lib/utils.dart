@@ -17,3 +17,17 @@ Path createCirclePath(double radius, {int segments = 32}) {
   path.close();
   return path;
 }
+
+Path createPlayerShape(double angle) {
+  final path = Path();
+  final length = 20.0;
+  final width = 10.0;
+
+  path.moveTo(length * cos(angle), length * sin(angle));
+  path.lineTo(
+      width * cos(angle + 2.0 * pi / 3.0), width * sin(angle + 2.0 * pi / 3.0));
+  path.lineTo(
+      width * cos(angle - 2.0 * pi / 3.0), width * sin(angle - 2.0 * pi / 3.0));
+  path.close();
+  return path;
+}

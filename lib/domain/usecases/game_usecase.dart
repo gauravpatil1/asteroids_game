@@ -62,6 +62,31 @@ class GameUsecase {
     final bounds2 = path2.getBounds().shift(offset2);
     return bounds1.overlaps(bounds2);
   }
+
+  void updatePlayer(Player player, double rotationSpeed, double acceleration,
+      double friction) {
+    final newOffsetX = player.offset.dx + player.speed * cos(player.angle);
+    final newOffsetY = player.offset.dy + player.speed * sin(player.angle);
+
+    player.offset = Offset(newOffsetX, newOffsetY); // Update offset
+
+    player.speed *= friction;
+
+    if (player.offset.dx < 0) {
+      player.offset = Offset(_screenSize.width, player.offset.dy);
+    }
+    if (player.offset.dx > _screenSize.width) {
+      player.offset = Offset(0, player.offset.dy);
+    }
+    if (player.offset.dy < 0) {
+      player.offset = Offset(player.offset.dx, _screenSize.height);
+    }
+    if (player.offset.dy > _screenSize.height) {
+      player.offset = Offset(player.offset.dx, 0);
+    }
+
+    player.shape = createPlayerShape(player.angle);
+  }
 }
 
 double randomDouble(double min, double max) =>
