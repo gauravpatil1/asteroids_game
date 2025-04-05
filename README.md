@@ -1,16 +1,6 @@
 # asteroids_game
 
-A new Flutter project.
+Please find below link for video explaining the code and functionality:
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Video Explanation]([https://docs.flutter.dev/get-started/codelab](https://github.com/gauravpatil1/asteroids_game/releases/download/assignment/Screen.Recording.2025-04-05.at.2.58.42.PM.mov))
+https://github.com/gauravpatil1/asteroids_game/releases/download/assignment/Screen.Recording.2025-04-05.at.2.58.42.PM.mov
