@@ -19,7 +19,7 @@ class GameUsecase {
   }
 
   List<Asteroid>? generateAsteroids(int currentAsteroid) {
-    if (currentAsteroid == 0) {
+    if (currentAsteroid < 4) {
       //generate asteroids initially
       return List.generate(10, (_) {
         double asteroidRadius = randomDouble(minAsteroidSize, maxAsteroidSize);

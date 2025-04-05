@@ -85,6 +85,10 @@ class _GameScreenState extends State<GameScreen>
       _setCurrentGameTime();
       _gameUseCase.updatePlayer(
           _player, _playerRotationSpeed, _acceleration, _friction);
+      if (_asteroids.length < 4) {
+        _asteroids
+            .addAll(_gameUseCase.generateAsteroids(_asteroids.length) ?? []);
+      }
       _gameUseCase.updateAsteroids(_asteroids);
       _gameUseCase.updateBullets(_bullets);
       _gameUseCase.detectBulletAsteroidCollision(_bullets, _asteroids);
@@ -119,9 +123,14 @@ class _GameScreenState extends State<GameScreen>
             _player.shape = createPlayerShape(_player.angle);
           });
         },
+        // onDoubleTap: () {
+        //   setState(() {
+        //     _player.speed += _acceleration;
+        //   });
+        // },
         onDoubleTap: () {
           setState(() {
-            _player.speed += _acceleration;
+            _bullets.add(_gameUseCase.createBullet(_player, bulletSpeed));
           });
         },
         onTap: () {
