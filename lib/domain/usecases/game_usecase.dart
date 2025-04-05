@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:asteroids_game/domain/entities/asteroid.dart';
+import 'package:asteroids_game/domain/entities/bullet.dart';
 import 'package:asteroids_game/domain/entities/player.dart';
 import 'package:asteroids_game/utils.dart';
 
@@ -86,6 +87,54 @@ class GameUsecase {
     }
 
     player.shape = createPlayerShape(player.angle);
+  }
+
+  Bullet createBullet(Player player, double bulletSpeed) {
+    return Bullet(
+      x: player.offset.dx,
+      y: player.offset.dy,
+      speedX: bulletSpeed * cos(player.angle),
+      speedY: bulletSpeed * sin(player.angle),
+    );
+  }
+
+  void updateBullets(List<Bullet> bullets) {
+    for (int i = bullets.length - 1; i >= 0; i--) {
+      bullets[i].x += bullets[i].speedX;
+      bullets[i].y += bullets[i].speedY;
+
+      if (bullets[i].x < 0 ||
+          bullets[i].x > _screenSize.width ||
+          bullets[i].y < 0 ||
+          bullets[i].y > _screenSize.height) {
+        bullets.removeAt(i);
+      }
+    }
+  }
+
+  void detectBulletAsteroidCollision(
+      List<Bullet> bullets, List<Asteroid> asteroids) {
+    for (int i = asteroids.length - 1; i >= 0; i--) {
+      for (int j = bullets.length - 1; j >= 0; j--) {
+        if (_checkCirclePathCollision(
+            Offset(bullets[j].x, bullets[j].y),
+            bullets[j].radius,
+            asteroids[i].shape,
+            Offset(asteroids[i].x, asteroids[i].y))) {
+          asteroids.removeAt(i);
+          bullets.removeAt(j);
+          return;
+        }
+      }
+    }
+  }
+
+  bool _checkCirclePathCollision(
+      Offset circleCenter, double circleRadius, Path path, Offset pathOffset) {
+    final bounds = path.getBounds().shift(pathOffset);
+    final circleBounds =
+        Rect.fromCircle(center: circleCenter, radius: circleRadius);
+    return bounds.overlaps(circleBounds);
   }
 }
 

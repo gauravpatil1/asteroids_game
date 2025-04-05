@@ -3,6 +3,7 @@ class Bullet {
   double y;
   double speedX;
   double speedY;
+  double radius = 5;
 
   Bullet({
     required this.x,

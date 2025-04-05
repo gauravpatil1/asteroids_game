@@ -17,6 +17,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen>
     with SingleTickerProviderStateMixin {
+  final bulletSpeed = 10.0;
   Player _player = Player(
     offset: Offset(0, 0),
     radius: 20,
@@ -85,6 +86,8 @@ class _GameScreenState extends State<GameScreen>
       _gameUseCase.updatePlayer(
           _player, _playerRotationSpeed, _acceleration, _friction);
       _gameUseCase.updateAsteroids(_asteroids);
+      _gameUseCase.updateBullets(_bullets);
+      _gameUseCase.detectBulletAsteroidCollision(_bullets, _asteroids);
       bool isGameOver =
           _gameUseCase.detectPlayerAsteroidCollision(_player, _asteroids);
       if (isGameOver) {
@@ -122,7 +125,9 @@ class _GameScreenState extends State<GameScreen>
           });
         },
         onTap: () {
-          //fire the bullet
+          setState(() {
+            _bullets.add(_gameUseCase.createBullet(_player, bulletSpeed));
+          });
         },
         child: Listener(
           onPointerHover: _updatePosition,
